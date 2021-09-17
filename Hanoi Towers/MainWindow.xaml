@@ -6,12 +6,14 @@
         xmlns:local="clr-namespace:Hanoi_Towers"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Background="{x:Null}">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="79*"/>
-            <ColumnDefinition Width="713*"/>
-        </Grid.ColumnDefinitions>
+        <TextBlock HorizontalAlignment="Left" Margin="39,36,0,0" TextWrapping="Wrap" Text="Ханойские башни: настройка" VerticalAlignment="Top" FontSize="22" Grid.ColumnSpan="2" Foreground="White"/>
+        <ComboBox HorizontalAlignment="Left" Margin="39,138,0,0"  VerticalAlignment="Top" Width="120">
+            <ComboBoxItem Content="Автоматический" Tag="automatic" IsSelected="True" HorizontalAlignment="Left" Width="118"/>
+            <ComboBoxItem Content="Ручной" Tag="manual" HorizontalAlignment="Left" Width="118"/>
+        </ComboBox>
+        <Label Content="Режим игры" HorizontalAlignment="Left" Margin="39,107,0,0" VerticalAlignment="Top" Width="93" Foreground="White"/>
 
     </Grid>
 </fw:AcrylicWindow>
