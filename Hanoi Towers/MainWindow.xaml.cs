@@ -37,8 +37,12 @@ namespace Hanoi_Towers
         {
             try
             {
-                ringsCountField.Text = ringsCountSlider.Value.ToString();
-            }catch(Exception err)
+                if (ringsCountField != null)
+                {
+                    ringsCountField.Text = ringsCountSlider.Value.ToString();
+                }
+                
+            }catch(NullReferenceException err)
             {
                 Debug.WriteLine(err.Message);
             }

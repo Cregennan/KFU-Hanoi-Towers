@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,125 +26,187 @@ namespace Hanoi_Towers
         List<int> ColumnCenters = new List<int> { 148, 396, 644 };
         List<int> ColumnsContainment = new List<int> { 0, 0, 0 };
         GameSettings Settings;
-        int RingMoveTime = 5000;
+        int RingMoveTime = 500;
+        List<DoubleAnimation> Animations = new List<DoubleAnimation>();
+        List<Tuple<int, int>> Movements = new List<Tuple<int, int>>();
+        bool GameAllowed = true;
 
 
-        public AutomaticGame(GameSettings gameSettings)
+        public void InitField()
         {
-            InitializeComponent();
-            Settings = gameSettings;
-            ColumnsContainment[0] = gameSettings.ringsCount;
+            ColumnsContainment[0] = Settings.ringsCount;
+            ColumnsContainment[1] = 0;
+            ColumnsContainment[2] = 0;
 
-            int RingWidth = gameSettings.FirstRingWidth;
-            for(int i = 0; i<gameSettings.ringsCount; i++)
+            column0.Children.Clear();
+            column1.Children.Clear();
+            column2.Children.Clear();
+
+            int RingWidth = Settings.FirstRingWidth;
+            for (int i = 0; i < Settings.ringsCount; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Width = RingWidth;
-                rect.Height = gameSettings.ringHeight;
+                rect.Height = Settings.ringHeight;
 
-                Canvas.SetBottom(rect,Rings.Count * gameSettings.ringHeight);
+                Canvas.SetBottom(rect, Rings.Count * Settings.ringHeight);
                 Canvas.SetLeft(rect, 100 - RingWidth / 2);
 
 
 
 
-                rect.Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(gameSettings.RingColors[i]);
-                rect.Stroke = (SolidColorBrush)new BrushConverter().ConvertFrom(gameSettings.RingColors[i]);
+                rect.Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(Settings.RingColors[i]);
+                rect.Stroke = (SolidColorBrush)new BrushConverter().ConvertFrom(Settings.RingColors[i]);
                 rect.StrokeThickness = 1;
 
                 column0.Children.Add(rect);
                 Rings.Add(rect);
-                RingWidth -= gameSettings.ringWidthFall * 2;
-                
+                RingWidth -= Settings.ringWidthFall * 2;
+
             }
-            Point that = ((Rectangle)column0.Children[0]).TransformToAncestor(gameField).Transform(new Point(1,1));
-            Debug.WriteLine(that);
-            MoveRing(0, 1);
+        }
+
+        public AutomaticGame(GameSettings gameSettings)
+        {
+            InitializeComponent();
+            Settings = gameSettings;
+            InitField();
+            //MoveRing(0, 1);
         }
 
         public void MoveRing(int from, int to)
         {
-            Canvas fromColumn = new Canvas();
-            Canvas toColumn = new Canvas();
-
-            switch (from)
+            try
             {
-                case 0:
-                    fromColumn = column0;
-                    break;
-                case 1:
-                    fromColumn = column1;
-                    break;
-                case 2:
-                    fromColumn = column2;
-                    break;
-                default:
-                    break;
+
+
+                Canvas fromColumn = new Canvas();
+                Canvas toColumn = new Canvas();
+
+                switch (from)
+                {
+                    case 0:
+                        fromColumn = column0;
+                        break;
+                    case 1:
+                        fromColumn = column1;
+                        break;
+                    case 2:
+                        fromColumn = column2;
+                        break;
+                    default:
+                        break;
+                }
+                switch (to)
+                {
+                    case 0:
+                        toColumn = column0;
+                        break;
+                    case 1:
+                        toColumn = column1;
+                        break;
+                    case 2:
+                        toColumn = column2;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (fromColumn.Children.Count == 0)
+                {
+                    return;
+                }
+
+                Rectangle rect = (Rectangle)fromColumn.Children[fromColumn.Children.Count - 1];
+
+                int CalculatedOriginLeft = (int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(fromColumn);
+                int CalculatedOriginBottom = (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(fromColumn);
+
+                fromColumn.Children.Remove(rect);
+                Canvas.SetBottom(rect, ColumnsContainment[to] * Settings.ringHeight);
+                ColumnsContainment[from]--;
+                ColumnsContainment[to]++;
+
+                int CalculatedDestinationLeft = (int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(toColumn);
+                int CalculatedDestinationBottom = (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(toColumn);
+
+
+                Rectangle tempRect = new Rectangle();
+
+                tempRect.Width = rect.Width;
+                tempRect.Height = rect.Height;
+                tempRect.Stroke = rect.Stroke;
+                tempRect.StrokeThickness = rect.StrokeThickness;
+                Canvas.SetLeft(tempRect, CalculatedOriginLeft);
+                Canvas.SetBottom(tempRect, CalculatedOriginBottom);
+                tempRect.Fill = rect.Fill;
+                gameField.Children.Add(tempRect);
+
+
+                Brush originalColor = rect.Fill;
+                rect.Fill = (SolidColorBrush)new BrushConverter().ConvertFrom("#00000000");
+
+                DoubleAnimation animx = new DoubleAnimation();
+                animx.From = CalculatedOriginLeft;
+                animx.To = CalculatedDestinationLeft;
+                animx.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
+                animx.Completed += (sender, e) => RingMoveCompleted(sender, e, rect, tempRect, originalColor);
+
+                DoubleAnimation animy = new DoubleAnimation();
+                animy.From = CalculatedOriginBottom;
+                animy.To = CalculatedDestinationBottom;
+                animy.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
+                
+
+                tempRect.BeginAnimation(Canvas.LeftProperty, animx);
+                tempRect.BeginAnimation(Canvas.BottomProperty, animy);
+                toColumn.Children.Add(rect);
             }
-            switch (to)
+            catch(Exception err)
             {
-                case 0:
-                    toColumn = column0;
-                    break;
-                case 1:
-                    toColumn = column1;
-                    break;
-                case 2:
-                    toColumn = column2;
-                    break;
-                default:
-                    break;
+                Debug.WriteLine(err.Message);
             }
-
-
-            Rectangle rect = (Rectangle)fromColumn.Children[column0.Children.Count - 1];
-
-            int CalculatedOriginLeft = (int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(fromColumn);
-            int CalculatedOriginBottom = (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(fromColumn);
-
-            fromColumn.Children.Remove(rect);
-            Canvas.SetBottom(rect, ColumnsContainment[to] * Settings.ringHeight);
-            ColumnsContainment[from]--;
-            ColumnsContainment[to]++;
-
-            int CalculatedDestinationLeft = (int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(toColumn);
-            int CalculatedDestinationBottom = (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(toColumn);
-
-
-            Rectangle tempRect = new Rectangle();
-
-            tempRect.Width = rect.Width;
-            tempRect.Height = rect.Height;
-            tempRect.Stroke = rect.Stroke;
-            tempRect.StrokeThickness = rect.StrokeThickness;
-            Canvas.SetLeft(tempRect, CalculatedOriginLeft);
-            Canvas.SetBottom(tempRect, CalculatedOriginBottom);
-            tempRect.Fill = rect.Fill;
-            gameField.Children.Add(tempRect);
-
-
-
-            DoubleAnimation animx = new DoubleAnimation();
-            animx.From = CalculatedOriginLeft;
-            animx.To = CalculatedDestinationLeft;
-            animx.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
-            animx.Completed += (sender, e) => RingMoveCompleted(sender, e, rect, toColumn, tempRect);
-
-            DoubleAnimation animy = new DoubleAnimation();
-            animy.From = CalculatedOriginBottom;
-            animy.To = CalculatedDestinationBottom;
-            animy.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
-
-
-            tempRect.BeginAnimation(Canvas.LeftProperty, animx);
-            tempRect.BeginAnimation(Canvas.BottomProperty, animy);
-            //System.Threading.Thread.Sleep(RingMoveTime);
-            //toColumn.Children.Add(rect);
         }
-        private void RingMoveCompleted(object sender, EventArgs e, Rectangle rect, Canvas canv, Rectangle that)
+        private void RingMoveCompleted(object sender, EventArgs e, Rectangle rect, Rectangle that, Brush fill)
         {
             gameField.Children.Remove(that);
-            canv.Children.Add(rect);
+            rect.Fill = fill;
+        }
+        private void SolutionHanoibns(int n, int from_rod, int to_rod, int aux_rod)
+        {
+            try
+            {
+                if (n == 0)
+                {
+
+                    Movements.Add(new Tuple<int, int>(from_rod, to_rod));
+                    return;
+                }
+                SolutionHanoibns(n - 1, from_rod, aux_rod, to_rod);
+
+                Movements.Add(new Tuple<int, int>(from_rod, to_rod));
+
+                SolutionHanoibns(n - 1, aux_rod, to_rod, from_rod);                
+            }catch(Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
+            
+        }
+        private async void startBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SolutionHanoibns(4, 0, 1, 2);
+
+            foreach(Tuple<int, int> move in Movements)
+            {
+                MoveRing(move.Item1, move.Item2);
+                await Task.Delay(RingMoveTime);
+            }
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            RingMoveTime = (int)speedSlider.Value;
         }
     }
 }

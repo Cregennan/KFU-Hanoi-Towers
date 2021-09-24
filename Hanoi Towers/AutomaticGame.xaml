@@ -17,5 +17,8 @@
         <Canvas Height="300" x:Name="column0" Canvas.Left="48" Canvas.Bottom="20" Width="200"/>
         <Canvas Height="300" x:Name="column1" Canvas.Left="296" Canvas.Bottom="20" Width="200"/>
         <Canvas Height="300" x:Name="column2" Canvas.Left="544" Canvas.Bottom="20" Width="200"/>
+        <Button x:Name="startBtn" Content="Старт" Canvas.Left="670" Canvas.Top="39" Width="75" Click="startBtn_Click"/>
+        <Slider x:Name="speedSlider" ValueChanged="Slider_ValueChanged" Minimum="200" Maximum="1000" Value="500" SmallChange="10" LargeChange="10" Canvas.Left="456" Canvas.Top="39" Width="172"/>
+        <Label Content="Скорость анимации" Canvas.Left="319" Canvas.Top="36"/>
     </Canvas>
 </Window>
