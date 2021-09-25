@@ -29,8 +29,7 @@ namespace Hanoi_Towers
         int RingMoveTime = 500;
         List<DoubleAnimation> Animations = new List<DoubleAnimation>();
         List<Tuple<int, int>> Movements = new List<Tuple<int, int>>();
-        bool GameAllowed = true;
-
+        bool GameFinished = false;
 
         public void InitField()
         {
@@ -62,8 +61,8 @@ namespace Hanoi_Towers
                 column0.Children.Add(rect);
                 Rings.Add(rect);
                 RingWidth -= Settings.ringWidthFall * 2;
-
             }
+            Rings.Clear();
         }
 
         public AutomaticGame(GameSettings gameSettings)
@@ -115,7 +114,7 @@ namespace Hanoi_Towers
                 if (fromColumn.Children.Count == 0)
                 {
                     return;
-                }
+                }   
 
                 Rectangle rect = (Rectangle)fromColumn.Children[fromColumn.Children.Count - 1];
 
@@ -176,37 +175,59 @@ namespace Hanoi_Towers
         {
             try
             {
-                if (n == 0)
+                if (n > 0)
                 {
+                    SolutionHanoibns(n - 1, from_rod, aux_rod, to_rod);
 
                     Movements.Add(new Tuple<int, int>(from_rod, to_rod));
-                    return;
+
+                    SolutionHanoibns(n - 1, aux_rod, to_rod, from_rod);
                 }
-                SolutionHanoibns(n - 1, from_rod, aux_rod, to_rod);
-
-                Movements.Add(new Tuple<int, int>(from_rod, to_rod));
-
-                SolutionHanoibns(n - 1, aux_rod, to_rod, from_rod);                
+                           
             }catch(Exception err)
             {
                 Debug.WriteLine(err.Message);
             }
             
         }
+        private void GameStart()
+        {
+            startBtn.IsEnabled = false;
+            clearBtn.IsEnabled = false;
+            GameFinished = false;
+        }
+        private void GameFinish()
+        {
+            startBtn.IsEnabled = true;
+            clearBtn.IsEnabled = true;
+            GameFinished = true;
+            Movements.Clear();
+            MessageBox.Show("Готово");
+        }
         private async void startBtn_Click(object sender, RoutedEventArgs e)
         {
-            SolutionHanoibns(4, 0, 1, 2);
-
+            if (GameFinished)
+            {
+                InitField();
+            }
+            GameStart();
+            SolutionHanoibns(Settings.ringsCount, 0, 1, 2);
             foreach(Tuple<int, int> move in Movements)
             {
                 MoveRing(move.Item1, move.Item2);
                 await Task.Delay(RingMoveTime);
             }
+            GameFinish();
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            RingMoveTime = (int)speedSlider.Value;
+            RingMoveTime = (int)(speedSlider.Maximum + speedSlider.Minimum) - (int)speedSlider.Value;
+        }
+
+        private void ClearBtn_Click(object sender, RoutedEventArgs e)
+        {
+            InitField();
         }
     }
 }

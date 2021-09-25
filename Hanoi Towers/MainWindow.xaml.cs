@@ -57,12 +57,18 @@ namespace Hanoi_Towers
             gameSettings.ringsCount = Int32.Parse(ringsCountField.Text);
 
 
-            if (gameMode.SelectedIndex == 0)
+            if (gameMode.SelectedIndex != 0)
             {
                 AutomaticGame auto = new AutomaticGame(gameSettings);
                 this.Close();
                 auto.ShowDialog();
             }
+            //if (gameMode.SelectedIndex == 1)
+            //{
+                ManualGame manual = new ManualGame(gameSettings);
+                this.Close();
+                manual.ShowDialog();
+           // }
         }
     }
 }
