@@ -16,20 +16,30 @@ namespace Hanoi_Towers
     /// </summary>
     public partial class AutomaticGame
     {
-
+        /// <summary>
+        /// Настройки игры
+        /// </summary>
         GameSettings Settings;
-
+        /// <summary>
+        /// Стандартная скорость анимации (мс). Обновится при перемещении слайдера
+        /// </summary>
         int RingMoveTime = 500;
-
+        /// <summary>
+        /// Хранит набор перемещений, необходимых для решения головоломки
+        /// </summary>
         List<Tuple<int, int>> Movements = new List<Tuple<int, int>>();
+        /// <summary>
+        /// Индикатор завершения игры, для очистки поля при нажатии кнопки "Старт"
+        /// </summary>
         bool GameFinished = false;
 
         public void InitField()
         {
+            //Очистка поля
             column0.Children.Clear();
             column1.Children.Clear();
             column2.Children.Clear();
-
+            //Создание и установка колец на первый колышек
             int RingWidth = GameSettings.FirstRingWidth;
             for (int i = 0; i < Settings.ringsCount; i++)
             {
@@ -60,6 +70,7 @@ namespace Hanoi_Towers
         {
             try
             {
+                //Определение исходного колышка и колышка назначения
                 Canvas fromColumn = new Canvas();
                 Canvas toColumn = new Canvas();
 
@@ -96,21 +107,25 @@ namespace Hanoi_Towers
                 {
                     return;
                 }   
-
+                //Подъем верхнего колышка исходного столбика
                 Rectangle rect = (Rectangle)fromColumn.Children[fromColumn.Children.Count - 1];
 
+                //Подсчет абслютных координат изначального расположения кольца для анимации перемещения
                 Point CalculatedOrigin = new Point((int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(fromColumn), (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(fromColumn));
 
+                //Удаление кольца с колышка
                 fromColumn.Children.Remove(rect);
                 Canvas.SetBottom(rect, toColumn.Children.Count * GameSettings.ringHeight);
 
+                //Подсчет абсолютных координат конечного расположения кольца для анимации перемещения
                 Point CalculatedDestination = new Point((int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(toColumn), (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(toColumn));
 
+                //Запуск анимации перемещения кольца
                 AnimateRingMovement(rect, CalculatedOrigin, CalculatedDestination);
 
                 
 
-
+                //Добавление кольца на новый колышек
                 toColumn.Children.Add(rect);
             }
             catch(Exception err)
@@ -121,37 +136,54 @@ namespace Hanoi_Towers
 
         private void AnimateRingMovement(Rectangle origin, Point CalculatedOrigin, Point CalculatedDestination)
         {
+            //Создание виртуального кольца на основе верхнего кольца исходного колышка
             Rectangle tempRect = GameSettings.GetCopy(origin);
-
+            //Установка стартового расположения
             Canvas.SetLeft(tempRect, CalculatedOrigin.X);
             Canvas.SetBottom(tempRect, CalculatedOrigin.Y);
-
+            //Добавление анимационного кольца на глобальный канвас
             gameField.Children.Add(tempRect);
 
-
+            //Перенос сохранение параметров кольца для создания эффекта "будущего расположения"
             Brush originalColor = origin.Fill;
             origin.Fill = GameSettings.GetColorFromRGBA(GameSettings.Colors.Transparent);
 
+            //Параметры анимации по X
             DoubleAnimation animx = new DoubleAnimation();
             animx.From = CalculatedOrigin.X;
             animx.To = CalculatedDestination.X;
             animx.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
             animx.Completed += (sender, e) => RingMoveCompleted(sender, e, origin, tempRect, originalColor);
-
+            //Параметры анимации по Y
             DoubleAnimation animy = new DoubleAnimation();
             animy.From = CalculatedOrigin.Y;
             animy.To = CalculatedDestination.Y;
             animy.Duration = TimeSpan.FromMilliseconds(RingMoveTime);
 
-
+            //Запуск анимации
             tempRect.BeginAnimation(Canvas.LeftProperty, animx);
             tempRect.BeginAnimation(Canvas.BottomProperty, animy);
         }
+        /// <summary>
+        /// Событие - завершение анимации перемещения кольца. Реальному кольцу на новом расположении возвращается его цвет
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="rect"></param>
+        /// <param name="that"></param>
+        /// <param name="fill"></param>
         private void RingMoveCompleted(object sender, EventArgs e, Rectangle rect, Rectangle that, Brush fill)
         {
             gameField.Children.Remove(that);
             rect.Fill = fill;
         }
+        /// <summary>
+        /// Непосредственно алгоритм решения задачи
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="from_rod"></param>
+        /// <param name="to_rod"></param>
+        /// <param name="aux_rod"></param>
         private void SolutionHanoibns(int n, int from_rod, int to_rod, int aux_rod)
         {
             try
@@ -169,12 +201,18 @@ namespace Hanoi_Towers
             }
             
         }
+        /// <summary>
+        /// Блокировка кнопкок при старте игры
+        /// </summary>
         private void GameStart()
         {
             startBtn.IsEnabled = false;
             clearBtn.IsEnabled = false;
             GameFinished = false;
         }
+        /// <summary>
+        /// Снятие блокировки после окончания игры
+        /// </summary>
         private void GameFinish()
         {
             startBtn.IsEnabled = true;
@@ -184,6 +222,11 @@ namespace Hanoi_Towers
             MessageBox.Show(this, GameSettings.MessageBoxDoneMessage, GameSettings.MessageBoxDoneCaption);
 
         }
+        /// <summary>
+        /// Обработчик нажатия кнопки старта игры. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void startBtn_Click(object sender, RoutedEventArgs e)
         {
             if (GameFinished)
@@ -191,6 +234,7 @@ namespace Hanoi_Towers
                 InitField();
             }
             GameStart();
+            //Вычисление перемещений колец
             SolutionHanoibns(Settings.ringsCount, 0, 1, 2);
             foreach(Tuple<int, int> move in Movements)
             {

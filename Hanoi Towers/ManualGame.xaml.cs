@@ -33,7 +33,7 @@ namespace Hanoi_Towers
         public void InitField()
         {
             Steps = 0;
-
+            //Очистка поля, аналогично автоматической игре
             column0.Children.Clear();
             column1.Children.Clear();
             column2.Children.Clear();
@@ -58,7 +58,7 @@ namespace Hanoi_Towers
             }
         }
         /// <summary>
-        /// Событие при нажатии на кольцо - подготовка к перетаскиванию
+        /// Событие нажатия на кольцо - подготовка к перетаскиванию
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -67,34 +67,46 @@ namespace Hanoi_Towers
 
             Rectangle rect = (Rectangle)sender;
             Canvas owner = (Canvas)rect.Parent;
-
+            //Определение нажатия на кнопке и наведения на верхнее кольцо колышка
             if (e.LeftButton == MouseButtonState.Pressed && owner.Children.IndexOf(rect) == owner.Children.Count - 1)
             {
+                //Старт перетаскивания кольца
                 DragDrop.DoDragDrop((Rectangle)sender, new DataObject(DataFormats.Serializable, (Rectangle)sender), DragDropEffects.Move);
             }
         }
-
+        /// <summary>
+        /// Перетаскивание кольца
+        /// </summary>
+        /// <param name="ring">Кольцо, которое нужно переместить</param>
+        /// <param name="dest">Canvas - колышек на который нужно переместить кольцо</param>
         private void MoveRing(Rectangle ring, Canvas dest)
         {
             Canvas origin = (Canvas)ring.Parent;
-            
+            //Нет смысла перетаскивать кольцо на тот же колышек
             if (dest == origin)
             {
                 return;
             }
+            //Определение правильности установки кольца (Меньшее на большее)
             if (dest.Children.Count != 0 && ((Rectangle)dest.Children[dest.Children.Count - 1]).ActualWidth < ring.ActualWidth)
             {
                 return;
             }
-
+            //Удаление из колышка исходного кольца
             origin.Children.Remove(ring);
+
+            //Вычисление Y координаты кольца в колышке
             int CalculatedLocalBottom = dest.Children.Count * GameSettings.ringHeight;
+
+            //Вычисление будущих координат кольца на экране 
             int CalculatedDestBottom = (int)(dest.Children.Count * GameSettings.ringHeight + Canvas.GetBottom(dest));
             int CalculatedDestLeft = (int)(Canvas.GetLeft(dest) + Canvas.GetLeft(ring));
+            
+            //Вычисление исходных координат кольца на экране
             int CalculatedOriginBottom = (int)(Canvas.GetBottom(origin) + Canvas.GetBottom(ring));
             int CalculatedOriginLeft = (int)(Canvas.GetLeft(origin) + Canvas.GetLeft(ring));
-
-            AnimateRingMovement(ring, dest, new Point(CalculatedOriginLeft, CalculatedOriginBottom), new Point(CalculatedDestLeft, CalculatedLocalBottom));
+            //Запуск анимации перемещения кольца
+            AnimateRingMovement(ring, dest, new Point(CalculatedOriginLeft, CalculatedOriginBottom), new Point(CalculatedDestLeft, CalculatedDestBottom));
             Canvas.SetBottom(ring, CalculatedLocalBottom);
         }
         private void ClearBtn_Click(object sender, RoutedEventArgs e)
@@ -142,6 +154,8 @@ namespace Hanoi_Towers
             Steps++;
             dest.Children.Add(rect);
             gameField.Children.Remove(temp);
+
+            //Определение столбца с полным набором колец
             if (column1.Children.Count < Settings.ringsCount && column2.Children.Count < Settings.ringsCount)
             {
                 return;
@@ -150,6 +164,8 @@ namespace Hanoi_Towers
             if (column1.Children.Count == Settings.ringsCount) col = column1;
             if (column2.Children.Count == Settings.ringsCount) col = column2;
 
+
+            //Проверка правильности расположения колец
             for (int i = 0; i < col.Children.Count - 1; i++)
             {
                 if (((Rectangle)col.Children[i]).ActualWidth < ((Rectangle)col.Children[i + 1]).ActualWidth)
