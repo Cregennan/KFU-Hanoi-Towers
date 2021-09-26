@@ -23,6 +23,7 @@ namespace Hanoi_Towers
     public partial class AutomaticGame : Window
     {
         List<Rectangle> Rings = new List<Rectangle>();
+        List<int> ColumnCenters = new List<int> { 148, 396, 644 };
         List<int> ColumnsContainment = new List<int> { 0, 0, 0 };
         GameSettings Settings;
         int RingMoveTime = 500;
@@ -53,8 +54,8 @@ namespace Hanoi_Towers
 
 
 
-                rect.Fill = GameSettings.GetColorFromRGBA(GameSettings.Colors.RingColors[i]);
-                rect.Stroke = GameSettings.GetColorFromRGBA(GameSettings.Colors.RingColors[i]);
+                rect.Fill = (SolidColorBrush)new BrushConverter().ConvertFrom(Settings.RingColors[i]);
+                rect.Stroke = (SolidColorBrush)new BrushConverter().ConvertFrom(Settings.RingColors[i]);
                 rect.StrokeThickness = 1;
 
                 column0.Children.Add(rect);
