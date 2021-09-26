@@ -10,7 +10,7 @@ namespace Hanoi_Towers
     /// <summary>
     /// Логика взаимодействия для ManualGame.xaml
     /// </summary>
-    public partial class ManualGame : Window
+    public partial class ManualGame
     {
         /// <summary>
         /// Глобальные игровые настройки
@@ -37,15 +37,15 @@ namespace Hanoi_Towers
             column1.Children.Clear();
             column2.Children.Clear();
 
-            int RingWidth = Settings.FirstRingWidth;
+            int RingWidth = GameSettings.FirstRingWidth;
             for (int i = 0; i < Settings.ringsCount; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Width = RingWidth;
-                rect.Height = Settings.ringHeight;
+                rect.Height = GameSettings.ringHeight;
                 rect.MouseMove += Rect_MouseMove;
 
-                Canvas.SetBottom(rect, column0.Children.Count * Settings.ringHeight);
+                Canvas.SetBottom(rect, column0.Children.Count * GameSettings.ringHeight);
                 Canvas.SetLeft(rect, 100 - RingWidth / 2);
 
                 rect.Fill = GameSettings.GetColorFromRGBA(GameSettings.Colors.RingColors[i]);
@@ -87,8 +87,8 @@ namespace Hanoi_Towers
             }
 
             origin.Children.Remove(ring);
-            int CalculatedLocalBottom = dest.Children.Count * Settings.ringHeight;
-            int CalculatedDestBottom = (int)(dest.Children.Count * Settings.ringHeight + Canvas.GetBottom(dest));
+            int CalculatedLocalBottom = dest.Children.Count * GameSettings.ringHeight;
+            int CalculatedDestBottom = (int)(dest.Children.Count * GameSettings.ringHeight + Canvas.GetBottom(dest));
             int CalculatedDestLeft = (int)(Canvas.GetLeft(dest) + Canvas.GetLeft(ring));
             int CalculatedOriginBottom = (int)(Canvas.GetBottom(origin) + Canvas.GetBottom(ring));
             int CalculatedOriginLeft = (int)(Canvas.GetLeft(origin) + Canvas.GetLeft(ring));

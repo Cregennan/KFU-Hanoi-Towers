@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SourceChord.FluentWPF;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,15 +21,13 @@ namespace Hanoi_Towers
     /// <summary>
     /// Логика взаимодействия для AutomaticGame.xaml
     /// </summary>
-    public partial class AutomaticGame : Window
+    public partial class AutomaticGame
     {
 
         GameSettings Settings;
 
         int RingMoveTime = 500;
 
-
-        List<DoubleAnimation> Animations = new List<DoubleAnimation>();
         List<Tuple<int, int>> Movements = new List<Tuple<int, int>>();
         bool GameFinished = false;
 
@@ -38,14 +37,14 @@ namespace Hanoi_Towers
             column1.Children.Clear();
             column2.Children.Clear();
 
-            int RingWidth = Settings.FirstRingWidth;
+            int RingWidth = GameSettings.FirstRingWidth;
             for (int i = 0; i < Settings.ringsCount; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Width = RingWidth;
-                rect.Height = Settings.ringHeight;
+                rect.Height = GameSettings.ringHeight;
 
-                Canvas.SetBottom(rect, column0.Children.Count * Settings.ringHeight);
+                Canvas.SetBottom(rect, column0.Children.Count * GameSettings.ringHeight);
                 Canvas.SetLeft(rect, 100 - RingWidth / 2);
 
                 rect.Fill = GameSettings.GetColorFromRGBA(GameSettings.Colors.RingColors[i]);
@@ -110,7 +109,7 @@ namespace Hanoi_Towers
                 Point CalculatedOrigin = new Point((int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(fromColumn), (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(fromColumn));
 
                 fromColumn.Children.Remove(rect);
-                Canvas.SetBottom(rect, toColumn.Children.Count * Settings.ringHeight);
+                Canvas.SetBottom(rect, toColumn.Children.Count * GameSettings.ringHeight);
 
                 Point CalculatedDestination = new Point((int)Canvas.GetLeft(rect) + (int)Canvas.GetLeft(toColumn), (int)Canvas.GetBottom(rect) + (int)Canvas.GetBottom(toColumn));
 
@@ -189,7 +188,8 @@ namespace Hanoi_Towers
             clearBtn.IsEnabled = true;
             GameFinished = true;
             Movements.Clear();
-            MessageBox.Show("Готово");
+            AcrylicMessageBox.Show(this, GameSettings.MessageBoxDoneMessage, GameSettings.MessageBoxDoneCaption);
+
         }
         private async void startBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -16,9 +16,10 @@ namespace Hanoi_Towers
             public static readonly String Transparent = "#00000000";
         }
 
-
-        public readonly int FirstRingWidth = 150;
-        public readonly int ringHeight = 20;
+        public static readonly string MessageBoxDoneMessage = "Башня собрана";
+        public static readonly string MessageBoxDoneCaption = "Welcome to the limit";
+        public static readonly int FirstRingWidth = 150;
+        public static readonly int ringHeight = 20;
         public readonly int ringWidthFall = 5;
 
         public string gameType;

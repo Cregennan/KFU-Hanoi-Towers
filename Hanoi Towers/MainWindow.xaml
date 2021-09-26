@@ -6,18 +6,18 @@
         xmlns:local="clr-namespace:Hanoi_Towers"
         xmlns:fw="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="{x:Null}">
-    <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="39,36,0,0" TextWrapping="Wrap" Text="Ханойские башни: начало" VerticalAlignment="Top" FontSize="22" Grid.ColumnSpan="2" Foreground="White"/>
-        <ComboBox x:Name="gameMode" fw:PointerTracker.Enabled="True" HorizontalAlignment="Left" Margin="39,138,0,0"  VerticalAlignment="Top" Width="120">
+        Title="Ханойские башни" Icon="Icon1.ico" Height="408.75" Width="522.5" Background="{x:Null}">
+    <Grid Margin="0,0,19,0">
+        <TextBlock  HorizontalAlignment="Left" Margin="39,36,0,0" TextWrapping="Wrap" Text="Ханойские башни: начало" VerticalAlignment="Top" FontSize="22" Grid.ColumnSpan="2" Foreground="White"/>
+        <ComboBox Style="{StaticResource ComboBoxRevealStyle}" x:Name="gameMode" fw:PointerTracker.Enabled="True" HorizontalAlignment="Left" Margin="39,138,0,0"  VerticalAlignment="Top" Width="165">
             <ComboBoxItem Content="Автоматический" IsSelected="True" HorizontalAlignment="Left" Width="118"/>
             <ComboBoxItem Content="Ручной" HorizontalAlignment="Left" Width="118"/>
         </ComboBox>
         <Label Content="Режим игры" HorizontalAlignment="Left" Margin="39,107,0,0" VerticalAlignment="Top" Width="93" Foreground="White"/>
         <Slider TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="RingsCountSlider_ValueChanged" x:Name="ringsCountSlider" Minimum="3" Maximum="10" LargeChange="1" SmallChange="1" Value="4" HorizontalAlignment="Left" Margin="39,211,0,0" VerticalAlignment="Top" Width="120"/>
-        <Label Content="Количество колец" HorizontalAlignment="Left" Margin="39,180,0,0" VerticalAlignment="Top" Width="120" Foreground="White"/>
-        <TextBox IsReadOnly="True" x:Name="ringsCountField" HorizontalAlignment="Left" Height="18" Margin="175,211,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="29"/>
-        <Button Content="Играть" HorizontalAlignment="Left" Margin="39,318,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        
+        <Label Content="Количество колец: " HorizontalAlignment="Left" Margin="39,180,0,0" VerticalAlignment="Top" Width="120" Foreground="White"/>
+        <Button Style="{StaticResource ButtonRevealStyle}" Content="Играть" HorizontalAlignment="Left" Margin="39,318,0,0" VerticalAlignment="Top" Width="86" Click="Button_Click" Height="29"/>
+        <Label x:Name="ringsCountLabel" Content="4" Foreground="White" HorizontalAlignment="Left" Margin="148,180,0,0" VerticalAlignment="Top"/>
+
     </Grid>
 </fw:AcrylicWindow>
