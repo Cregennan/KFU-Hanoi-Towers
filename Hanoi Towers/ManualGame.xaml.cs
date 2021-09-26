@@ -150,7 +150,7 @@ namespace Hanoi_Towers
         private void Column_Drop(object sender, DragEventArgs e)
         {
             Rectangle rect = (Rectangle)e.Data.GetData(DataFormats.Serializable);
-            ((Canvas)sender).Background = GameSettings.GetColorFromRGBA(GameSettings.Colors.TransparentColor);
+            ((Canvas)sender).Background = GameSettings.GetColorFromRGBA(GameSettings.Colors.Transparent);
             MoveRing(rect, (Canvas)sender);
 
         }
@@ -176,13 +176,13 @@ namespace Hanoi_Towers
         }
 
         /// <summary>
-        /// Событие при покидании мыши Канвас - столбца. Очищает цвет индикатора перетаскивания.
+        /// Событие при покидании мыши Канвас-столбца. Очищает цвет индикатора перетаскивания.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Column_DragLeave(object sender, DragEventArgs e)
         {
-            ((Canvas)sender).Background = GameSettings.GetColorFromRGBA(GameSettings.Colors.TransparentColor);
+            ((Canvas)sender).Background = GameSettings.GetColorFromRGBA(GameSettings.Colors.Transparent);
         }
 
 
