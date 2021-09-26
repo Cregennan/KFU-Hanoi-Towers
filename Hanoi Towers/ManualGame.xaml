@@ -14,9 +14,9 @@
         <Rectangle Fill="Black" Height="300" Canvas.Left="143" Stroke="Black" Canvas.Bottom="20" Width="10"/>
         <Rectangle Fill="Black" Height="300" Canvas.Left="391" Stroke="Black" Canvas.Bottom="20" Width="10"/>
         <Rectangle Fill="Black" Height="300" Canvas.Right="143" Stroke="Black" Canvas.Bottom="20" Width="10"/>
-        <Canvas Height="300" x:Name="column0" Canvas.Left="48" Canvas.Bottom="20" Width="200"/>
-        <Canvas Height="300" x:Name="column1" Canvas.Left="296" Canvas.Bottom="20" Width="200"/>
-        <Canvas Height="300" x:Name="column2" Canvas.Left="544" Canvas.Bottom="20" Width="200"/>
+        <Canvas Background="Transparent" AllowDrop="True" Height="300" x:Name="column0"  Canvas.Left="48" Canvas.Bottom="20" DragLeave="Column_DragLeave" DragEnter="Column_DragEnter" Drop="Column_Drop" Width="200"/>
+        <Canvas Background="Transparent" AllowDrop="True" Height="300" x:Name="column1"  Canvas.Left="296" Canvas.Bottom="20" DragLeave="Column_DragLeave" DragEnter="Column_DragEnter" Drop="Column_Drop"  Width="200"/>
+        <Canvas Background="Transparent" AllowDrop="True" Height="300" x:Name="column2"  Canvas.Left="544" Canvas.Bottom="20" DragLeave="Column_DragLeave" DragEnter="Column_DragEnter" Drop="Column_Drop" Width="200"/>
         <Button x:Name="clearBtn" Content="Сброс" Canvas.Left="669" Canvas.Top="23" Width="75" Click="ClearBtn_Click"/>
     </Canvas>
 </Window>
