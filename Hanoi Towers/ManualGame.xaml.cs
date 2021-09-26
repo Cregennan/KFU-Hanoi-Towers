@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SourceChord.FluentWPF;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,7 +18,7 @@ namespace Hanoi_Towers
         /// </summary>
         GameSettings Settings;
 
-
+        int Steps;
 
         public ManualGame(GameSettings settings)
         {
@@ -31,7 +32,7 @@ namespace Hanoi_Towers
         /// </summary>
         public void InitField()
         {
-
+            Steps = 0;
 
             column0.Children.Clear();
             column1.Children.Clear();
@@ -115,7 +116,7 @@ namespace Hanoi_Towers
             animx.From = origin.X;
             animx.To = destination.X;
             animx.Duration = TimeSpan.FromMilliseconds(50);
-            animx.Completed += (sender, e) => RingMoveCompleted(sender, e, ring, dest, temp);
+            animx.Completed += (sender, e) => RingMoveCompleted1(sender, e, ring, dest, temp);
 
             DoubleAnimation animy = new DoubleAnimation();
             animy.From = origin.Y;
@@ -136,10 +137,50 @@ namespace Hanoi_Towers
         /// <param name="rect">Настоящее кольцо, которое должно быть добавлено на столбец назначение</param>
         /// <param name="dest">Столбец назначения</param>
         /// <param name="temp">Временное кольцо анимации</param>
-        private void RingMoveCompleted(object sender, EventArgs e, Rectangle rect, Canvas dest, Rectangle temp)
+        private void RingMoveCompleted1(object sender, EventArgs e, Rectangle rect, Canvas dest, Rectangle temp)
         {
+            Steps++;
             dest.Children.Add(rect);
             gameField.Children.Remove(temp);
+            if (column1.Children.Count < Settings.ringsCount && column2.Children.Count < Settings.ringsCount)
+            {
+                return;
+            }
+            Canvas col = column1;
+            if (column1.Children.Count == Settings.ringsCount) col = column1;
+            if (column2.Children.Count == Settings.ringsCount) col = column2;
+
+            for (int i = 0; i < col.Children.Count - 1; i++)
+            {
+                if (((Rectangle)col.Children[i]).ActualWidth < ((Rectangle)col.Children[i + 1]).ActualWidth)
+                {
+                    return;
+                }
+            }
+
+            String message = GameSettings.MessageBoxDoneMessage + Environment.NewLine;
+            message += String.Format("Поздравляем! Вы успешно решили головоломку за {0} шагов. {1}", Steps, Environment.NewLine);
+            message += String.Format("Идеальное решение - {0} шагов {1}", Math.Pow(2, Settings.ringsCount) - 1, Environment.NewLine);
+            if (Steps == Math.Pow(2, Settings.ringsCount) - 1)
+            {
+                message += String.Format("Ваше решение совпадает с идеальным{0}", Environment.NewLine);
+            }
+            message += String.Format("Хотите начать заново?{0}", Environment.NewLine);
+
+            MessageBoxResult r = AcrylicMessageBox.Show(this, message, GameSettings.MessageBoxDoneCaption, MessageBoxButton.YesNo);
+
+            switch (r)
+            {
+                case MessageBoxResult.Yes:
+                    InitField();
+                    break;
+                case MessageBoxResult.No:
+                    //ddd
+                    break;
+                default:
+
+                    break;
+            }
         }
 
         /// <summary>
