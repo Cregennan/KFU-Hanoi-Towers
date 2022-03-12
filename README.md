@@ -1,6 +1,6 @@
 # Ханойские башни
 **Второй проект из трёх по программированию на 2 семестре**
-
+**Единственный проект из трёх с полными комментариями к коду**
 ![](https://sun9-21.userapi.com/impg/4Y8cD0s4aqbBelXoinnj3zngL6cc252Jb2AYhQ/XVVGYO374wo.jpg?size=800x478&quality=96&sign=be4f584be457ae72125cc12dfe3ad66a&type=album)
 
 ## Структура
